@@ -8,6 +8,8 @@ import 'package:laundry_app/models/user_model.dart';
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
 
+  logout(context) {}
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -94,6 +96,46 @@ class AccountView extends StatelessWidget {
                 ],
               ),
             ),
+            DView.spaceHeight(10),
+            // === CHANGE PROFILE
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              onTap: () {},
+              dense: true,
+              horizontalTitleGap: 0,
+              leading: const Icon(Icons.image),
+              title: const Text('Change Profile'),
+              trailing: const Icon(Icons.navigate_next),
+            ),
+            // === CHANGE PROFILE
+
+            // === CHANGE Edit Account
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              onTap: () {},
+              dense: true,
+              horizontalTitleGap: 0,
+              leading: const Icon(Icons.image),
+              title: const Text('Edit Account'),
+              trailing: const Icon(Icons.navigate_next),
+            ),
+            // === CHANGE Edit Account
+
+            // === LOGOUT BUTTON
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              child: OutlinedButton(
+                onPressed: () => logout(context),
+                child: const Text('Logout'),
+              ),
+            ),
+            // === LOGOUT BUTTON
           ],
         );
       },
