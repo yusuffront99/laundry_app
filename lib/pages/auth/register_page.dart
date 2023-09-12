@@ -3,37 +3,44 @@ import 'package:d_info/d_info.dart';
 import 'package:d_input/d_input.dart';
 import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_app/config/app.constant.dart';
 import 'package:laundry_app/config/app_assets.dart';
 import 'package:laundry_app/config/app_colors.dart';
 import 'package:laundry_app/config/app_response.dart';
 import 'package:laundry_app/config/failure.dart';
-import 'package:laundry_app/dataSources/user_dataSource.dart';
+import 'package:laundry_app/dataSources/user_datasource.dart';
+import 'package:laundry_app/providers/register_provider.dart';
 
-class RegisterPage extends StatefulWidget {
+// == ConsumerStatefulWidget berfungsi menyedikan ref
+
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final editUsername = TextEditingController();
-  final editEmail = TextEditingController();
-  final editPassword = TextEditingController();
+class _RegisterPageState extends ConsumerState<RegisterPage> {
+  final edtUsername = TextEditingController();
+  final edtEmail = TextEditingController();
+  final edtPassword = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   execute() {
     bool validInput = formKey.currentState!.validate();
     if (!validInput) return;
 
+    setRegisterStatus(ref, 'Loading');
+
     UserDataSource.register(
-      editUsername.text,
-      editEmail.text,
-      editPassword.text,
+      edtUsername.text,
+      edtEmail.text,
+      edtPassword.text,
     ).then((value) {
       String newStatus = '';
+
       value.fold(
         (failure) {
           switch (failure.runtimeType) {
@@ -67,11 +74,11 @@ class _RegisterPageState extends State<RegisterPage> {
               newStatus = failure.message ?? '-';
               break;
           }
-          // setRegisterStatus(ref, newStatus);
+          setRegisterStatus(ref, newStatus);
         },
         (result) {
           DInfo.toastSuccess('Register Success');
-          // setRegisterStatus(ref, 'Success');
+          setRegisterStatus(ref, 'Success');
         },
       );
     });
@@ -87,8 +94,6 @@ class _RegisterPageState extends State<RegisterPage> {
             AppAssets.bgAuth,
             fit: BoxFit.cover,
           ),
-
-          // === GRADIENT
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -105,15 +110,11 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
             child: Column(
-              // == space title and form input register
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // ===========LAYER 3
-                // === TITTLE
                 Padding(
                   padding: const EdgeInsets.only(top: 30),
                   child: Column(
@@ -122,12 +123,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         AppConstants.appName,
                         style: GoogleFonts.poppins(
                           fontSize: 40,
-                          color: Colors.green,
+                          color: Colors.green[900],
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-
-                      //  ===== DASH LINE
                       Container(
                         height: 5,
                         width: 40,
@@ -136,23 +135,16 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      //  ===== DASH LINE
                     ],
                   ),
                 ),
-                // ===========LAYER 3
-
-                // ---- FORM REGISTER
                 Form(
                   key: formKey,
                   child: Column(
                     children: [
-                      // == INPUT USERNAME
                       IntrinsicHeight(
                         child: Row(
                           children: [
-                            //  == type input please install d_input
-                            //  == ICONS
                             AspectRatio(
                               aspectRatio: 1,
                               child: Material(
@@ -164,28 +156,24 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                             ),
-                            //  == ICONS
                             DView.spaceWidth(10),
                             Expanded(
                               child: DInput(
-                                controller: editUsername,
+                                controller: edtUsername,
                                 fillColor: Colors.white70,
                                 hint: 'Username',
                                 radius: BorderRadius.circular(10),
+                                validator: (input) =>
+                                    input == '' ? "Don't empty" : null,
                               ),
                             ),
                           ],
                         ),
                       ),
                       DView.spaceHeight(16),
-                      // == INPUT USERNAME
-
-                      // == INPUT EMAIL
                       IntrinsicHeight(
                         child: Row(
                           children: [
-                            //  == type input please install d_input
-                            //  == ICONS
                             AspectRatio(
                               aspectRatio: 1,
                               child: Material(
@@ -197,28 +185,24 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                             ),
-                            //  == ICONS
                             DView.spaceWidth(10),
                             Expanded(
                               child: DInput(
-                                controller: editEmail,
+                                controller: edtEmail,
                                 fillColor: Colors.white70,
                                 hint: 'Email',
                                 radius: BorderRadius.circular(10),
+                                validator: (input) =>
+                                    input == '' ? "Don't empty" : null,
                               ),
                             ),
                           ],
                         ),
                       ),
                       DView.spaceHeight(16),
-                      // == INPUT EMAIL
-
-                      // == INPUT PASSWORD
                       IntrinsicHeight(
                         child: Row(
                           children: [
-                            //  == type input please install d_input
-                            //  == ICONS
                             AspectRatio(
                               aspectRatio: 1,
                               child: Material(
@@ -230,11 +214,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                             ),
-                            //  == ICONS
                             DView.spaceWidth(10),
                             Expanded(
                               child: DInputPassword(
-                                controller: editPassword,
+                                controller: edtPassword,
                                 fillColor: Colors.white70,
                                 hint: 'Password',
                                 radius: BorderRadius.circular(10),
@@ -245,22 +228,15 @@ class _RegisterPageState extends State<RegisterPage> {
                           ],
                         ),
                       ),
-                      DView.spaceHeight(16),
-                      // == INPUT PASSWORD
-
-                      //**************************************************/
-
-                      // ==== BUTTON REGISTER
+                      DView.spaceHeight(),
                       IntrinsicHeight(
                         child: Row(
                           children: [
-                            //  == type input please install d_button
-                            //  == ICONS
                             AspectRatio(
                               aspectRatio: 1,
                               child: DButtonFlat(
                                 onClick: () {
-                                  // Navigator.pop(context);
+                                  Navigator.pop(context);
                                 },
                                 padding: const EdgeInsets.all(0),
                                 radius: 10,
@@ -276,23 +252,27 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             DView.spaceWidth(10),
                             Expanded(
-                              child: ElevatedButton(
-                                onPressed: () => execute(),
-                                style: const ButtonStyle(
-                                  alignment: Alignment.centerLeft,
-                                ),
-                                child: const Text('Register'),
-                              ),
+                              child: Consumer(builder: (_, wiRef, __) {
+                                String status =
+                                    wiRef.watch(registerStatusProvider);
+                                if (status == 'Loading') {
+                                  return DView.loadingCircle();
+                                }
+                                return ElevatedButton(
+                                  onPressed: () => execute(),
+                                  style: const ButtonStyle(
+                                    alignment: Alignment.centerLeft,
+                                  ),
+                                  child: const Text('Register'),
+                                );
+                              }),
                             ),
                           ],
                         ),
                       ),
-                      DView.spaceHeight(16),
-                      // ==== BUTTON REGISTER
                     ],
                   ),
                 ),
-                // ---- FORM REGISTER
               ],
             ),
           ),

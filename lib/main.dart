@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_app/pages/auth/register_page.dart';
-// import 'package:laundry/config/app_colors.dart';
+// import 'package:laundry_app/pages/auth/register_page.dart';
+
+import 'config/app_colors.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -15,16 +22,16 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.green,
+        primaryColor: AppColors.primary,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.light(
-          primary: Colors.green,
+          primary: AppColors.primary,
           secondary: Colors.greenAccent[400]!,
         ),
         textTheme: GoogleFonts.latoTextTheme(),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
-            backgroundColor: const MaterialStatePropertyAll(Colors.green),
+            backgroundColor: const MaterialStatePropertyAll(AppColors.primary),
             shape: MaterialStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -39,7 +46,7 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: RegisterPage(),
+      home: const RegisterPage(),
     );
   }
 }
