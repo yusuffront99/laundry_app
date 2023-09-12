@@ -2,6 +2,7 @@ import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_app/config/app_assets.dart';
+import 'package:laundry_app/config/app_colors.dart';
 import 'package:laundry_app/config/app_session.dart';
 import 'package:laundry_app/models/user_model.dart';
 
@@ -136,6 +137,123 @@ class AccountView extends StatelessWidget {
               ),
             ),
             // === LOGOUT BUTTON
+
+            // === SETTING
+            DView.spaceHeight(30),
+            const Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              child: Text(
+                'Setting',
+                style: TextStyle(
+                  height: 1,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+
+            // === LIST MENU TILES
+            //==>>> DARK MODE
+            ListTile(
+              onTap: () {},
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              dense: true,
+              leading: const Icon(Icons.dark_mode),
+              horizontalTitleGap: 0,
+              trailing: Switch(
+                activeColor: AppColors.primary,
+                value: false,
+                onChanged: (value) {},
+              ),
+              title: const Text('Dark Mode'),
+            ),
+
+            //==>>> LANGUAGE
+            ListTile(
+              onTap: () {},
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              dense: true,
+              leading: const Icon(Icons.translate),
+              horizontalTitleGap: 0,
+              title: const Text('Language'),
+              trailing: const Icon(Icons.navigate_next),
+            ),
+
+            //==>>> NOTIFICATION
+            ListTile(
+              onTap: () {},
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              dense: true,
+              leading: const Icon(Icons.notifications),
+              horizontalTitleGap: 0,
+              title: const Text('Notification'),
+              trailing: const Icon(Icons.navigate_next),
+            ),
+
+            //==>>> FEEDBACK
+            ListTile(
+              onTap: () {},
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              dense: true,
+              leading: const Icon(Icons.feedback),
+              horizontalTitleGap: 0,
+              title: const Text('Feedback'),
+              trailing: const Icon(Icons.navigate_next),
+            ),
+
+            //==>>> SUPPORT
+            ListTile(
+              onTap: () {},
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              dense: true,
+              leading: const Icon(Icons.support_agent),
+              horizontalTitleGap: 0,
+              title: const Text('Support'),
+              trailing: const Icon(Icons.navigate_next),
+            ),
+
+            //==>>> ABOUT
+            ListTile(
+              onTap: () {
+                showAboutDialog(
+                    context: context,
+                    applicationIcon: const Icon(
+                      Icons.local_laundry_service,
+                      size: 50,
+                      color: AppColors.primary,
+                    ),
+                    applicationName: 'My Laundry',
+                    applicationVersion: 'v1.0.0',
+                    children: [
+                      Text(
+                        'My Laundry is Market App to monitor you laundry',
+                      ),
+                    ]);
+              },
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              dense: true,
+              leading: const Icon(Icons.info),
+              horizontalTitleGap: 0,
+              title: const Text('About'),
+              trailing: const Icon(Icons.navigate_next),
+            ),
+
+            // === LIST MENU TILES
+            // === SETTING
           ],
         );
       },
