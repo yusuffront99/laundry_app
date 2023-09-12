@@ -1,5 +1,5 @@
 import 'package:d_button/d_button.dart';
-// import 'package:d_info/d_info.dart';
+import 'package:d_info/d_info.dart';
 import 'package:d_input/d_input.dart';
 import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +8,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_app/config/app.constant.dart';
 import 'package:laundry_app/config/app_assets.dart';
 import 'package:laundry_app/config/app_colors.dart';
+import 'package:laundry_app/config/app_session.dart';
 import 'package:laundry_app/config/nav.dart';
 import 'package:laundry_app/pages/auth/register_page.dart';
-// import 'package:laundry_app/config/app_response.dart';
-// import 'package:laundry_app/config/failure.dart';
-// import 'package:laundry_app/dataSources/user_datasource.dart';
+import 'package:laundry_app/config/app_response.dart';
+import 'package:laundry_app/config/failure.dart';
+import 'package:laundry_app/dataSources/user_datasource.dart';
 import 'package:laundry_app/providers/register_provider.dart';
 
 // == ConsumerStatefulWidget berfungsi menyedikan ref
@@ -31,59 +32,62 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
 
   execute() {
-    // bool validInput = formKey.currentState!.validate();
-    // if (!validInput) return;
+    bool validInput = formKey.currentState!.validate();
+    if (!validInput) return;
 
     // setRegisterStatus(ref, 'Loading');
 
-    // UserDataSource.register(
-    //   edtUsername.text,
-    //   edtEmail.text,
-    //   edtPassword.text,
-    // ).then((value) {
-    //   String newStatus = '';
+    UserDataSource.login(
+      edtEmail.text,
+      edtPassword.text,
+    ).then((value) {
+      String newStatus = '';
 
-    //   value.fold(
-    //     (failure) {
-    //       switch (failure.runtimeType) {
-    //         case ServerFailure:
-    //           newStatus = 'Server Error';
-    //           DInfo.toastError(newStatus);
-    //           break;
-    //         case NotFoundFailure:
-    //           newStatus = 'Error Not Found';
-    //           DInfo.toastError(newStatus);
-    //           break;
-    //         case ForbiddenFailure:
-    //           newStatus = 'You don\'t have access';
-    //           DInfo.toastError(newStatus);
-    //           break;
-    //         case BadRequestFailure:
-    //           newStatus = 'Bad request';
-    //           DInfo.toastError(newStatus);
-    //           break;
-    //         case InvalidInputFailure:
-    //           newStatus = 'Invalid Input';
-    //           AppResponse.invalidInput(context, failure.message ?? '{}');
-    //           break;
-    //         case UnauthorisedFailure:
-    //           newStatus = 'Unauthorised';
-    //           DInfo.toastError(newStatus);
-    //           break;
-    //         default:
-    //           newStatus = 'Request Error';
-    //           DInfo.toastError(newStatus);
-    //           newStatus = failure.message ?? '-';
-    //           break;
-    //       }
-    //       setRegisterStatus(ref, newStatus);
-    //     },
-    //     (result) {
-    //       DInfo.toastSuccess('Register Success');
-    //       setRegisterStatus(ref, 'Success');
-    //     },
-    //   );
-    // });
+      value.fold(
+        (failure) {
+          switch (failure.runtimeType) {
+            case ServerFailure:
+              newStatus = 'Server Error';
+              DInfo.toastError(newStatus);
+              break;
+            case NotFoundFailure:
+              newStatus = 'Error Not Found';
+              DInfo.toastError(newStatus);
+              break;
+            case ForbiddenFailure:
+              newStatus = 'You don\'t have access';
+              DInfo.toastError(newStatus);
+              break;
+            case BadRequestFailure:
+              newStatus = 'Bad request';
+              DInfo.toastError(newStatus);
+              break;
+            case InvalidInputFailure:
+              newStatus = 'Invalid Input';
+              AppResponse.invalidInput(context, failure.message ?? '{}');
+              break;
+            case UnauthorisedFailure:
+              newStatus = 'Unauthorised';
+              DInfo.toastError(newStatus);
+              break;
+            default:
+              newStatus = 'Request Error';
+              DInfo.toastError(newStatus);
+              newStatus = failure.message ?? '-';
+              break;
+          }
+          setRegisterStatus(ref, newStatus);
+        },
+        (result) {
+          AppSession.setUser(result['data']);
+          AppSession.setBearerToken(result['token']);
+          DInfo.toastSuccess('Login Success');
+          // setRegisterStatus(ref, 'Success');
+
+          // Nav.replace(context, const DashboardPage());
+        },
+      );
+    });
   }
 
   @override
