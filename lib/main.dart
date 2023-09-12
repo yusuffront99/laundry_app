@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laundry_app/pages/auth/login_page.dart';
 import 'package:laundry_app/pages/auth/register_page.dart';
-// import 'package:laundry_app/pages/auth/register_page.dart';
 
 import 'config/app_colors.dart';
 
@@ -46,7 +46,7 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const RegisterPage(),
+      home: const LoginPage(),
     );
   }
 }
