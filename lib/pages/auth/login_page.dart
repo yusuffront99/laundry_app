@@ -14,7 +14,7 @@ import 'package:laundry_app/pages/auth/register_page.dart';
 import 'package:laundry_app/config/app_response.dart';
 import 'package:laundry_app/config/failure.dart';
 import 'package:laundry_app/dataSources/user_datasource.dart';
-import 'package:laundry_app/providers/register_provider.dart';
+import 'package:laundry_app/providers/login_provider.dart';
 
 // == ConsumerStatefulWidget berfungsi menyedikan ref
 
@@ -26,7 +26,6 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final edtUsername = TextEditingController();
   final edtEmail = TextEditingController();
   final edtPassword = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -35,7 +34,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     bool validInput = formKey.currentState!.validate();
     if (!validInput) return;
 
-    // setRegisterStatus(ref, 'Loading');
+    setLoginStatus(ref, 'Loading');
 
     UserDataSource.login(
       edtEmail.text,
@@ -67,7 +66,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               AppResponse.invalidInput(context, failure.message ?? '{}');
               break;
             case UnauthorisedFailure:
-              newStatus = 'Unauthorised';
+              newStatus = 'Login Failed';
               DInfo.toastError(newStatus);
               break;
             default:
@@ -76,14 +75,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               newStatus = failure.message ?? '-';
               break;
           }
-          setRegisterStatus(ref, newStatus);
+          setLoginStatus(ref, newStatus);
         },
         (result) {
           AppSession.setUser(result['data']);
           AppSession.setBearerToken(result['token']);
           DInfo.toastSuccess('Login Success');
-          // setRegisterStatus(ref, 'Success');
-
+          setLoginStatus(ref, 'Success');
           // Nav.replace(context, const DashboardPage());
         },
       );
@@ -148,7 +146,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   key: formKey,
                   child: Column(
                     children: [
-                      // DView.spaceHeight(16),
                       IntrinsicHeight(
                         child: Row(
                           children: [
@@ -206,7 +203,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ],
                         ),
                       ),
-                      DView.spaceHeight(16),
+                      DView.spaceHeight(),
                       IntrinsicHeight(
                         child: Row(
                           children: [
@@ -232,7 +229,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             Expanded(
                               child: Consumer(builder: (_, wiRef, __) {
                                 String status =
-                                    wiRef.watch(registerStatusProvider);
+                                    wiRef.watch(loginStatusProvider);
                                 if (status == 'Loading') {
                                   return DView.loadingCircle();
                                 }
