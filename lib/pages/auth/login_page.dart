@@ -14,6 +14,7 @@ import 'package:laundry_app/pages/auth/register_page.dart';
 import 'package:laundry_app/config/app_response.dart';
 import 'package:laundry_app/config/failure.dart';
 import 'package:laundry_app/dataSources/user_datasource.dart';
+import 'package:laundry_app/pages/dashboard_page.dart';
 import 'package:laundry_app/providers/login_provider.dart';
 
 // == ConsumerStatefulWidget berfungsi menyedikan ref
@@ -82,7 +83,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           AppSession.setBearerToken(result['token']);
           DInfo.toastSuccess('Login Success');
           setLoginStatus(ref, 'Success');
-          // Nav.replace(context, const DashboardPage());
+          Nav.replace(context, const DashboardPage());
         },
       );
     });

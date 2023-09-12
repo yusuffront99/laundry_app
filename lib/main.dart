@@ -1,8 +1,11 @@
+import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laundry_app/config/app_session.dart';
 import 'package:laundry_app/pages/auth/login_page.dart';
 import 'package:laundry_app/pages/auth/register_page.dart';
+import 'package:laundry_app/pages/dashboard_page.dart';
 
 import 'config/app_colors.dart';
 
@@ -46,7 +49,21 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const LoginPage(),
+      home: FutureBuilder(
+        //  ======SESSION LOGIN
+        future: AppSession.getUser(),
+        builder: (context, snapshot) {
+          // if (snapshot.connectionState == ConnectionState.waiting) {
+          //   return DView.loadingCircle();
+          // }
+          if (snapshot.data == null) {
+            return const LoginPage();
+          }
+          // print(snapshot.data!.toJson());
+          return const DashboardPage();
+        },
+        //  ======SESSION LOGIN
+      ),
     );
   }
 }
