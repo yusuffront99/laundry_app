@@ -1,15 +1,31 @@
+import 'package:d_info/d_info.dart';
 import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_app/config/app_assets.dart';
 import 'package:laundry_app/config/app_colors.dart';
 import 'package:laundry_app/config/app_session.dart';
+import 'package:laundry_app/config/nav.dart';
 import 'package:laundry_app/models/user_model.dart';
+import 'package:laundry_app/pages/auth/login_page.dart';
 
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
 
-  logout(context) {}
+  logout(context) {
+    DInfo.dialogConfirmation(
+      context,
+      'Logout',
+      'You sure want to logout?',
+      textNo: 'cancel',
+    ).then((yes) {
+      if (yes ?? false) {
+        AppSession.removeUser();
+        AppSession.removeBearerToken();
+        Nav.replace(context, const LoginPage());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
