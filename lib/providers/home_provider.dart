@@ -19,13 +19,13 @@ setHomeRecommendationStatus(WidgetRef ref, String newStatus) {
   ref.read(HomeRecommendationStatusProvider.notifier).state = newStatus;
 }
 
+// === eSPECIALLY FOR MODEL SHOW DATA (JAMAK / )
+
 // ======= PROVIDERS
 final HomePromoListProvider =
     StateNotifierProvider.autoDispose<HomePromoList, List<PromoModel>>(
         (ref) => HomePromoList([]));
-// ======= PROVIDERS
 
-// === SPECIALLY FOR MODEL SHOW DATA (JAMAK / )
 // ====== *** PROMO ***
 class HomePromoList extends StateNotifier<List<PromoModel>> {
   HomePromoList(super.state);
@@ -35,6 +35,11 @@ class HomePromoList extends StateNotifier<List<PromoModel>> {
     state = newData;
   }
 }
+
+// ======= PROVIDERS
+final HomeRecommendationListProvider =
+    StateNotifierProvider.autoDispose<HomerRecommendationList, List<ShopModel>>(
+        (ref) => HomerRecommendationList([]));
 
 // ====== *** PROMO ***
 class HomerRecommendationList extends StateNotifier<List<ShopModel>> {

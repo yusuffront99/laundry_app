@@ -1,5 +1,9 @@
+import 'package:d_button/d_button.dart';
+import 'package:d_view/d_view.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_app/config/failure.dart';
 import 'package:laundry_app/datasources/promo_datasource.dart';
 import 'package:laundry_app/datasources/shop_datasource.dart';
@@ -16,6 +20,10 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
+  // ======= SEARCHING FEATURE
+  static final edtSearch = TextEditingController();
+
+  gotoSearchCity() {}
   getPromo() {
     PromoDataSource.readLimit().then((value) {
       value.fold(
@@ -97,6 +105,107 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 
   Widget build(BuildContext context) {
-    return ListView();
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(30, 20, 30, 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'We\'are ready',
+                style: GoogleFonts.ptSans(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              DView.spaceHeight(4),
+              Text(
+                'to clean your clothes',
+                style: GoogleFonts.ptSans(
+                  color: Colors.black54,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400,
+                  height: 1,
+                ),
+              ),
+              DView.spaceHeight(20),
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_city,
+                        color: Colors.green,
+                        size: 20,
+                      ),
+                      DView.spaceWidth(4),
+                      Text(
+                        'Find by City',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                  // ============= SEARCH FEATURE
+                  DView.spaceHeight(8),
+                  IntrinsicHeight(
+                    /// (ii)  IntrinsicHeight berfungsi menyamakan tinggi dua atau lebih shape ke shape paling tertinggi
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green[50],
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () => gotoSearchCity(),
+                                  icon: const Icon(Icons.search),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: edtSearch,
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Search...',
+                                    ),
+                                    onSubmitted: (value) => gotoSearchCity(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // ============= SEARCH FEATURE
+
+                        //  ====== TUNE BUTTON RIGHT
+                        DView.spaceWidth(),
+                        DButtonElevation(
+                          onClick: () {},
+                          mainColor: Colors.green,
+                          splashColor: Colors.greenAccent,
+                          width: 50,
+                          radius: 10,
+                          child: const Icon(
+                            Icons.tune,
+                            color: Colors.white,
+                          ),
+                        ),
+                        //  ====== TUNE BUTTON RIGHT
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
