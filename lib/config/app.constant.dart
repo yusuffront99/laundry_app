@@ -9,7 +9,7 @@ class AppConstants {
   /// == home network
 
   /// == office newtowrk
-  static const _host = 'http://10.8.248.18:8000';
+  static const _host = 'http://192.168.8.110:8000';
 
   ///  baseURL = http://192.168.1.14:8000/api
   static const baseURL = '$_host/api';
@@ -48,4 +48,14 @@ class AppConstants {
     },
   ];
   // ==navbar menu
+
+  // == categories via tune home page
+  static const homeCategories = [
+    'All',
+    'Regular',
+    'Express',
+    'Economical',
+    'Exlusive',
+  ];
+  // == categories
 }
