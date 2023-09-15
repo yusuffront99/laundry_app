@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_app/config/app.constant.dart';
+import 'package:laundry_app/config/app_assets.dart';
 import 'package:laundry_app/config/app_colors.dart';
 import 'package:laundry_app/config/failure.dart';
 import 'package:laundry_app/datasources/promo_datasource.dart';
 import 'package:laundry_app/datasources/shop_datasource.dart';
 import 'package:laundry_app/models/promo_model.dart';
 import 'package:laundry_app/models/shop_model.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../config/app_format.dart';
 import '../../providers/home_provider.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -55,7 +58,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           List data = result['data'];
           List<PromoModel> promos =
               data.map((e) => PromoModel.fromJson(e)).toList();
-          ref.read(HomePromoListProvider.notifier).setData(promos);
+          ref.read(homePromoListProvider.notifier).setData(promos);
           // ref.read(homePromoListProvider.notifier).setData(promos);
         },
       );
@@ -92,7 +95,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           List data = result['data'];
           List<ShopModel> shops =
               data.map((e) => ShopModel.fromJson(e)).toList();
-          ref.read(HomeRecommendationListProvider.notifier).setData(shops);
+          ref.read(homeRecommendationListProvider.notifier).setData(shops);
         },
       );
     });
@@ -105,6 +108,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
@@ -112,35 +116,134 @@ class _HomeViewState extends ConsumerState<HomeView> {
         categories(),
         DView.spaceHeight(20),
         //  === promo
-        Consumer(
-          builder: (_, wiRef, __) {
-            List<PromoModel> list = wiRef.watch(HomePromoListProvider);
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      DView.textTitle('Promo', color: Colors.black),
-                      DView.textAction(() {}, color: AppColors.primary),
-                    ],
-                  ),
-                ),
-                if (list.isEmpty) DView.empty('No Promo'),
-              ],
-            );
-          },
-        ),
+        promo(),
         //  === promo
       ],
+    );
+  }
+
+  Consumer promo() {
+    final pageController = PageController();
+    return Consumer(
+      builder: (_, wiRef, __) {
+        List<PromoModel> list = wiRef.watch(homePromoListProvider);
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  DView.textTitle('Promo', color: Colors.black),
+                  DView.textAction(() {}, color: AppColors.primary),
+                ],
+              ),
+            ),
+            if (list.isEmpty) DView.empty('No Promo'),
+            if (list.isNotEmpty)
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: PageView.builder(
+                  controller: pageController,
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    PromoModel item = list[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: FadeInImage(
+                                placeholder: const AssetImage(
+                                    AppAssets.placeholderLaundry),
+                                image: NetworkImage(
+                                  '${AppConstants.baseImageURL}/promo/${item.image}',
+                                ),
+                                fit: BoxFit.cover,
+                                imageErrorBuilder:
+                                    (context, error, stackTrace) {
+                                  return const Icon(Icons.error);
+                                },
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: Colors.white,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 6,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    item.shop.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  DView.spaceHeight(4),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '${AppFormat.shortPrice(item.newPrice)} /kg',
+                                        style: const TextStyle(
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${AppFormat.shortPrice(item.oldPrice)} /kg',
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          decoration: TextDecoration
+                                              .lineThrough, //=== garis tengah tulisan
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            if (list.isEmpty) DView.spaceHeight(8),
+            if (list.isNotEmpty)
+              SmoothPageIndicator(
+                controller: pageController,
+                count: list.length,
+                effect: WormEffect(
+                  dotHeight: 4,
+                  dotWidth: 12,
+                  dotColor: Colors.grey[300]!,
+                  activeDotColor: AppColors.primary,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
   Consumer categories() {
     return Consumer(
       builder: (_, wiRef, __) {
-        String categorySelected = wiRef.watch(HomeCategoryProvider);
+        String categorySelected = wiRef.watch(homeCategoryProvider);
         return SizedBox(
           height: 30,
           child: ListView.builder(

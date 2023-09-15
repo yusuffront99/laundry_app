@@ -116,7 +116,7 @@ class AccountView extends StatelessWidget {
             DView.spaceHeight(10),
             // === CHANGE PROFILE
             ListTile(
-              contentPadding: EdgeInsets.symmetric(
+              contentPadding: const EdgeInsets.symmetric(
                 horizontal: 30,
               ),
               onTap: () {},
@@ -130,7 +130,7 @@ class AccountView extends StatelessWidget {
 
             // === CHANGE Edit Account
             ListTile(
-              contentPadding: EdgeInsets.symmetric(
+              contentPadding: const EdgeInsets.symmetric(
                 horizontal: 30,
               ),
               onTap: () {},
@@ -253,7 +253,7 @@ class AccountView extends StatelessWidget {
                     applicationName: 'My Laundry',
                     applicationVersion: 'v1.0.0',
                     children: [
-                      Text(
+                      const Text(
                         'My Laundry is Market App to monitor you laundry',
                       ),
                     ]);

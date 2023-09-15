@@ -42,7 +42,7 @@ class AppConstants {
       'label': 'My Laundry',
     },
     {
-      'view': AccountView(),
+      'view': const AccountView(),
       'icon': Icons.account_circle,
       'label': 'Account',
     },
