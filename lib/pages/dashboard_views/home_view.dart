@@ -12,6 +12,7 @@ import 'package:laundry_app/datasources/promo_datasource.dart';
 import 'package:laundry_app/datasources/shop_datasource.dart';
 import 'package:laundry_app/models/promo_model.dart';
 import 'package:laundry_app/models/shop_model.dart';
+import 'package:laundry_app/pages/detail_shop_page.dart';
 import 'package:laundry_app/pages/search_by_city_page.dart';
 import 'package:laundry_app/widgets/error_background.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -296,7 +297,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   itemBuilder: (context, index) {
                     ShopModel item = list[index];
                     return GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Nav.push(context, DetailShopPage(shop: item));
+                      },
                       child: Container(
                         margin: EdgeInsets.fromLTRB(
                           index == 0 ? 30 : 10,

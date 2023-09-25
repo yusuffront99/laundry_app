@@ -1,24 +1,7 @@
-import 'package:laundry_app/models/shop_model.dart';
-import 'package:laundry_app/models/user_model.dart';
+import 'shop_model.dart';
+import 'user_model.dart';
 
 class LaundryModel {
-  int id;
-  String claimCode;
-  int userId;
-  int shopId;
-  double weight;
-  bool withPickup;
-  bool withDelivery;
-  String pickupAddress;
-  String deliveryAddress;
-  int total;
-  String description;
-  String status;
-  DateTime createdAt;
-  DateTime updatedAt;
-  UserModel user;
-  ShopModel shop;
-
   LaundryModel({
     required this.id,
     required this.claimCode,
@@ -37,6 +20,23 @@ class LaundryModel {
     required this.user,
     required this.shop,
   });
+
+  int id;
+  String claimCode;
+  int userId;
+  int shopId;
+  double weight;
+  bool withPickup;
+  bool withDelivery;
+  String pickupAddress;
+  String deliveryAddress;
+  double total;
+  String description;
+  String status;
+  DateTime createdAt;
+  DateTime updatedAt;
+  UserModel user;
+  ShopModel shop;
 
   factory LaundryModel.fromJson(Map<String, dynamic> json) => LaundryModel(
         id: json["id"],

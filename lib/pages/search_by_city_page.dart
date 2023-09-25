@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:laundry_app/config/app_colors.dart';
 import 'package:laundry_app/config/failure.dart';
+import 'package:laundry_app/config/nav.dart';
 import 'package:laundry_app/datasources/shop_datasource.dart';
 import 'package:laundry_app/models/shop_model.dart';
+import 'package:laundry_app/pages/detail_shop_page.dart';
 import 'package:laundry_app/providers/search_by_city_provider.dart';
 
 class SearchByCity extends ConsumerStatefulWidget {
@@ -128,7 +130,9 @@ class _SearchByCityState extends ConsumerState<SearchByCity> {
               itemBuilder: (context, index) {
                 ShopModel shop = list[index];
                 return ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    Nav.push(context, DetailShopPage(shop: shop));
+                  },
                   leading: CircleAvatar(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
