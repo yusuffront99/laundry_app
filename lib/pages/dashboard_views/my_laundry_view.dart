@@ -1,3 +1,4 @@
+import 'package:d_info/d_info.dart';
 import 'package:d_input/d_input.dart';
 import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:laundry_app/config/app.constant.dart';
 import 'package:laundry_app/config/app_format.dart';
+import 'package:laundry_app/config/app_response.dart';
 import 'package:laundry_app/config/app_session.dart';
 import 'package:laundry_app/config/failure.dart';
+import 'package:laundry_app/config/nav.dart';
 import 'package:laundry_app/datasources/laundry_datasource.dart';
 import 'package:laundry_app/models/laundry_model.dart';
 import 'package:laundry_app/models/user_model.dart';
+import 'package:laundry_app/pages/detail_laundry_page.dart';
 import 'package:laundry_app/providers/my_laundry_provider.dart';
 import 'package:laundry_app/widgets/error_background.dart';
 
@@ -23,6 +27,7 @@ class MyLaundryView extends ConsumerStatefulWidget {
 
 class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
   late UserModel user;
+
   getMyLaundry() {
     LaundryDatasource.readByUser(user.id).then((value) {
       value.fold(
@@ -32,7 +37,7 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
               setMyLaundryStatus(ref, 'Server Error');
               break;
             case NotFoundFailure:
-              setMyLaundryStatus(ref, 'Error Not Found');
+              setMyLaundryStatus(ref, 'Not Found');
               break;
             case ForbiddenFailure:
               setMyLaundryStatus(ref, 'You don\'t have access');
@@ -51,7 +56,6 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
         (result) {
           setMyLaundryStatus(ref, 'Success');
           List data = result['data'];
-
           List<LaundryModel> laundries =
               data.map((e) => LaundryModel.fromJson(e)).toList();
           ref.read(myLaundryListProvider.notifier).setData(laundries);
@@ -71,14 +75,14 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
           key: formKey,
           child: SimpleDialog(
             titlePadding: const EdgeInsets.all(16),
-            contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            contentPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             title: const Text('Claim Laundry'),
             children: [
               DInput(
                 controller: edtLaundryID,
                 title: 'Laundry ID',
                 radius: BorderRadius.circular(10),
-                validator: (input) => input == '' ? "Dont't Empty" : null,
+                validator: (input) => input == '' ? "Don't empty" : null,
                 inputType: TextInputType.number,
               ),
               DView.spaceHeight(),
@@ -86,24 +90,21 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
                 controller: edtClaimCode,
                 title: 'Claim Code',
                 radius: BorderRadius.circular(10),
-                validator: (input) => input == '' ? "Dont't Empty" : null,
-                inputType: TextInputType.number,
+                validator: (input) => input == '' ? "Don't empty" : null,
               ),
               DView.spaceHeight(20),
               ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     Navigator.pop(context);
-                    claimNow();
+                    claimNow(edtLaundryID.text, edtClaimCode.text);
                   }
                 },
                 child: const Text('Claim Now'),
               ),
               DView.spaceHeight(8),
               TextButton(
-                onPressed: () => {
-                  Navigator.pop(context),
-                },
+                onPressed: () => Navigator.pop(context),
                 child: const Text('Cancel'),
               ),
             ],
@@ -113,7 +114,41 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
     );
   }
 
-  claimNow() {}
+  claimNow(String id, String claimCode) {
+    LaundryDatasource.claim(id, claimCode).then((value) {
+      value.fold(
+        (failure) {
+          switch (failure.runtimeType) {
+            case ServerFailure:
+              DInfo.toastError('Server Error');
+              break;
+            case NotFoundFailure:
+              DInfo.toastError('Not Found');
+              break;
+            case ForbiddenFailure:
+              DInfo.toastError('You don\'t have access');
+              break;
+            case BadRequestFailure:
+              DInfo.toastError('Laundry has been claimed');
+              break;
+            case InvalidInputFailure:
+              AppResponse.invalidInput(context, failure.message ?? '{}');
+              break;
+            case UnauthorisedFailure:
+              DInfo.toastError('Unauthorised');
+              break;
+            default:
+              DInfo.toastError('Request Error');
+              break;
+          }
+        },
+        (result) {
+          DInfo.toastSuccess('Claim Success');
+          getMyLaundry();
+        },
+      );
+    });
+  }
 
   @override
   void initState() {
@@ -178,8 +213,8 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
                   );
                 }
 
-                return GroupedListView<dynamic, String>(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                return GroupedListView<LaundryModel, String>(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 80),
                   elements: list,
                   groupBy: (element) => AppFormat.justDate(element.createdAt),
                   order: GroupedListOrder.DESC,
@@ -204,88 +239,93 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
                     ),
                   ),
                   itemBuilder: (context, laundry) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  laundry.shop.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                    return GestureDetector(
+                      onTap: () {
+                        Nav.push(context, DetailLaundryPage(laundry: laundry));
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    laundry.shop.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                                DView.spaceWidth(),
+                                Text(
+                                  AppFormat.longPrice(laundry.total),
+                                  textAlign: TextAlign.end,
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w500,
                                     fontSize: 18,
                                   ),
                                 ),
-                              ),
-                              DView.spaceWidth(),
-                              Text(
-                                AppFormat.longPrice(laundry.total),
-                                textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
-                          ),
-                          DView.spaceHeight(12),
-                          Row(
-                            children: [
-                              if (laundry.withPickup)
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    borderRadius: BorderRadius.circular(4),
+                              ],
+                            ),
+                            DView.spaceHeight(12),
+                            Row(
+                              children: [
+                                if (laundry.withPickup)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    child: const Text(
+                                      'Pickup',
+                                      style: TextStyle(
+                                          color: Colors.white, height: 1),
+                                    ),
                                   ),
-                                  margin: const EdgeInsets.only(right: 8),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
+                                if (laundry.withDelivery)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    child: const Text(
+                                      'Delivery',
+                                      style: TextStyle(
+                                          color: Colors.white, height: 1),
+                                    ),
                                   ),
-                                  child: const Text(
-                                    'Pickup',
-                                    style: TextStyle(
-                                        color: Colors.white, height: 1),
-                                  ),
-                                ),
-                              if (laundry.withDelivery)
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  margin: const EdgeInsets.only(right: 8),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  child: const Text(
-                                    'Delivery',
-                                    style: TextStyle(
-                                        color: Colors.white, height: 1),
-                                  ),
-                                ),
-                              Expanded(
-                                child: Text(
-                                  '${laundry.weight} kg',
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w300,
+                                Expanded(
+                                  child: Text(
+                                    '${laundry.weight}kg',
+                                    textAlign: TextAlign.end,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -298,7 +338,6 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
     );
   }
 
-// ============= CATEGORIES ALL ...
   Consumer categories() {
     return Consumer(
       builder: (_, wiRef, __) {
@@ -312,11 +351,11 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
               String category = AppConstants.laundryStatusCategory[index];
               return Padding(
                 padding: EdgeInsets.only(
-                    left: index == 0 ? 30 : 8,
-                    right:
-                        index == AppConstants.laundryStatusCategory.length - 1
-                            ? 30
-                            : 8),
+                  left: index == 0 ? 30 : 8,
+                  right: index == AppConstants.laundryStatusCategory.length - 1
+                      ? 30
+                      : 8,
+                ),
                 child: InkWell(
                   onTap: () {
                     setMyLaundryCategory(ref, category);
@@ -355,8 +394,6 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
     );
   }
 
-// ============= CATEGORIES ALL ...
-// ===== PADDING HEADER
   Padding header() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(30, 60, 30, 10),

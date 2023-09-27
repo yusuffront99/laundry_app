@@ -531,6 +531,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
               height: 1,
             ),
           ),
+          DView.spaceHeight(4),
+          const Text(
+            'by ccodicee',
+            style: TextStyle(color: Colors.green, fontWeight: FontWeight.w300),
+          ),
           DView.spaceHeight(20),
           Column(
             children: [
