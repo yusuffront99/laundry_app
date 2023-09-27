@@ -8,6 +8,7 @@ setMyLaundryStatus(WidgetRef ref, String newStatus) {
 }
 
 final myLaundryCategoryProvider = StateProvider.autoDispose((ref) => 'All');
+
 setMyLaundryCategory(WidgetRef ref, String newStatus) {
   ref.read(myLaundryCategoryProvider.notifier).state = newStatus;
 }

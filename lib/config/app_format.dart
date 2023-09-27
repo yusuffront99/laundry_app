@@ -26,10 +26,10 @@ class AppFormat {
   static String shortDate(source) {
     switch (source.runtimeType) {
       case String:
-        return DateFormat('EEEE, d MMMM yy').format(DateTime.parse(source));
+        return DateFormat('EEEE, d MMM yy').format(DateTime.parse(source));
 
       case DateTime:
-        return DateFormat('EEEE, d MMMM yy').format(DateTime.parse(source));
+        return DateFormat('EEEE, d MMM yy').format(DateTime.parse(source));
 
       default:
         return 'Not Valid';
